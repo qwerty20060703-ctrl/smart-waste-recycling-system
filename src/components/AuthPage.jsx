@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 
-export default function AuthPage() {
+export default function AuthPage({ setIsAuthenticated }) { // Accept setIsAuthenticated as a prop
   const navigate = useNavigate();
   const [tab, setTab] = useState("signup");
   const [role, setRole] = useState("Volunteer");
@@ -69,7 +69,7 @@ export default function AuthPage() {
     }
   };
 
-  const handleLoginSubmit = async (e) => {
+const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
@@ -81,11 +81,11 @@ export default function AuthPage() {
       );
       setMessage(response.data.message);
 
-      // Redirect to Dashboard after login
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
-    } catch (err) {
+      // On successful login, update auth state and navigate to dashboard
+      setIsAuthenticated(true);
+      navigate("/dashboard");
+      
+    } catch (err) { // This is the corrected line with the opening brace
       setError(err.response?.data?.message || "Login failed");
     }
   };

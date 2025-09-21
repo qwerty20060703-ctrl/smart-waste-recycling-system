@@ -10,31 +10,35 @@ export default function VerifyOTP() {
 
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState(""); // Add error state
 
   const handleVerify = async (e) => {
     e.preventDefault();
     setMessage("");
+    setError(""); // Clear previous errors
 
     try {
       // Call backend verify endpoint
       const res = await axios.post("http://localhost:5000/api/auth/verify-otp", { email, otp });
-      console.log("Email:", email, "OTP:", otp);
       setMessage(res.data.message);
 
       if (mode === "register") {
         // ✅ Registration flow → go to dashboard
+        // Note: In a real app, you would also set the auth state here
         setTimeout(() => {
-          navigate("/dashboard");
+          // For now, we manually navigate to the login page to complete the flow
+          alert("Registration successful! Please log in.");
+          navigate("/"); 
         }, 1500);
+
       } else if (mode === "reset") {
         // ✅ Password reset flow → redirect to ResetPassword page
-         //localStorage.setItem("resetToken", res.data.resetToken);
         setTimeout(() => {
           navigate("/reset-password", { state: {email} });
         }, 1000);
       }
     } catch (err) {
-      setMessage(err.response?.data?.message || "OTP verification failed");
+      setError(err.response?.data?.message || "OTP verification failed"); // Use setError
     }
   };
 
@@ -57,7 +61,8 @@ export default function VerifyOTP() {
       <div className="w-1/2 flex flex-col justify-start mt-20 px-16">
         <h2 className="text-xl font-semibold mb-4 mt-20">Enter OTP</h2>
         <form className="space-y-2" onSubmit={handleVerify}>
-          {message && <p className="text-red-600 font-semibold">{message}</p>}
+          {message && <p className="text-green-700 font-semibold">{message}</p>}
+          {error && <p className="text-red-600 font-semibold">{error}</p>} {/* Display error message */}
 
           <div className="flex items-center border rounded-md px-3">
             <input
